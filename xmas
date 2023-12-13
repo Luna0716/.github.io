@@ -1,1 +1,59 @@
 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽獎網站</title>
+    <script>
+        var participants = ["成員A", "成員B", "成員C", "成員D", "成員E", "成員F", "成員G", "成員H", "成員I", "成員J", "成員K", "成員L", "成員M"];
+        var draws = {};
+        participants.forEach(function(participant) {
+            draws[participant] = [...participants];
+        });
+
+        function draw() {
+            var member = document.getElementById("memberSelect").value;
+            var possibleDraws = draws[member].filter(p => p !== member);
+            if (possibleDraws.length === 0) {
+                document.getElementById("result").innerHTML = member + "，你已經抽過了!";
+                return;
+            }
+
+            var index = Math.floor(Math.random() * possibleDraws.length);
+            var drawnMember = possibleDraws[index];
+            document.getElementById("result").innerHTML = member + " 抽到了 " + drawnMember;
+
+            // 更新其他成員的可抽籤池
+            participants.forEach(function(participant) {
+                if (participant !== member) {
+                    var idx = draws[participant].indexOf(drawnMember);
+                    if (idx > -1) {
+                        draws[participant].splice(idx, 1);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>歡迎來到抽獎網站</h2>
+
+    <label for="memberSelect">選擇你的名字：</label>
+    <select id="memberSelect">
+        <option value="">請選擇...</option>
+        <!-- 生成選項 -->
+        <script>
+            participants.forEach(function(participant) {
+                var option = document.createElement("option");
+                option.value = participant;
+                option.text = participant;
+                document.getElementById("memberSelect").appendChild(option);
+            });
+        </script>
+    </select>
+    
+    <button onclick="draw()">開始抽籤</button>
+    <p id="result"></p>
+</body>
+</html>
